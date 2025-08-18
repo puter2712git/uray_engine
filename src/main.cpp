@@ -8,6 +8,9 @@
 #include <iostream>
 #include <sstream>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 void ProcessInput(GLFWwindow* window);
 
@@ -41,6 +44,12 @@ int main()
     uray::Shader* spriteShader = new uray::Shader("../src/shader/sprite.vert.glsl", "../src/shader/sprite.frag.glsl");
     uray::SpriteRenderer* spriteRenderer = new uray::SpriteRenderer("../resource/container.jpg");
 
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    glm::mat4 projection;
+    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
     // Render Loop
     while (!glfwWindowShouldClose(window)) {
         ProcessInput(window);
@@ -48,7 +57,14 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glm::mat4 transform = spriteRenderer->GetTransform();
+        transform = glm::rotate(transform, (float)glfwGetTime() * 0.1f, glm::vec3(0.0f, 0.0f, 1.0f));
+        spriteRenderer->SetTransform(transform);
+
         spriteShader->Use();
+        spriteShader->SetMat4("model", model);
+        spriteShader->SetMat4("view", view);
+        spriteShader->SetMat4("projection", projection);
         spriteRenderer->Render();
 
         glfwSwapBuffers(window);

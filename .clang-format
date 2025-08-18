@@ -19,7 +19,7 @@ BraceWrapping:
 
 PointerAlignment: Left
 
-AllowShortFunctionsOnASingleLine: None
+AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 
