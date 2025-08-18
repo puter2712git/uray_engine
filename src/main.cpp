@@ -1,6 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "config.h"
+#include "core/camera.h"
 #include "core/shader.h"
 #include "core/sprite_renderer.h"
 
@@ -44,9 +45,9 @@ int main()
     uray::Shader* spriteShader = new uray::Shader("../src/shader/sprite.vert.glsl", "../src/shader/sprite.frag.glsl");
     uray::SpriteRenderer* spriteRenderer = new uray::SpriteRenderer("../resource/container.jpg");
 
+    uray::Camera* camera = new uray::Camera();
+
     glm::mat4 model = glm::mat4(1.0f);
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
@@ -57,13 +58,16 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glm::mat4 transform = spriteRenderer->GetTransform();
-        transform = glm::rotate(transform, (float)glfwGetTime() * 0.1f, glm::vec3(0.0f, 0.0f, 1.0f));
-        spriteRenderer->SetTransform(transform);
+        glm::vec3 cameraPos = camera->GetPosition();
+        cameraPos.x = sin(glfwGetTime()) * 10.0f;
+        cameraPos.z = cos(glfwGetTime()) * 10.0f;
+        cameraPos.y = 5.0f;
+        camera->SetPosition(cameraPos);
+        camera->UpdateViewMatrix();
 
         spriteShader->Use();
         spriteShader->SetMat4("model", model);
-        spriteShader->SetMat4("view", view);
+        spriteShader->SetMat4("view", camera->GetViewMatrix());
         spriteShader->SetMat4("projection", projection);
         spriteRenderer->Render();
 
