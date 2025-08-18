@@ -44,6 +44,12 @@ int main()
     uray::Shader* spriteShader = new uray::Shader("../src/shader/sprite.vert.glsl", "../src/shader/sprite.frag.glsl");
     uray::SpriteRenderer* spriteRenderer = new uray::SpriteRenderer("../resource/container.jpg");
 
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    glm::mat4 projection;
+    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
     // Render Loop
     while (!glfwWindowShouldClose(window)) {
         ProcessInput(window);
@@ -56,7 +62,9 @@ int main()
         spriteRenderer->SetTransform(transform);
 
         spriteShader->Use();
-        spriteShader->SetMat4("transform", transform);
+        spriteShader->SetMat4("model", model);
+        spriteShader->SetMat4("view", view);
+        spriteShader->SetMat4("projection", projection);
         spriteRenderer->Render();
 
         glfwSwapBuffers(window);
