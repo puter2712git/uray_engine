@@ -4,6 +4,7 @@
 #include "core/camera.h"
 #include "core/shader.h"
 #include "core/sprite_renderer.h"
+#include "core/unit.h"
 
 #include <fstream>
 #include <iostream>
@@ -44,29 +45,32 @@ int main()
 
     uray::Shader* spriteShader = new uray::Shader("../src/shader/sprite.vert.glsl", "../src/shader/sprite.frag.glsl");
     uray::SpriteRenderer* spriteRenderer = new uray::SpriteRenderer("../resource/container.jpg");
+    uray::Unit* unit = new uray::Unit();
 
     uray::Camera* camera = new uray::Camera();
 
-    glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
+    double lastTime = glfwGetTime();
+
     // Render Loop
     while (!glfwWindowShouldClose(window)) {
+        double currentTime = glfwGetTime();
+        float deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
+
         ProcessInput(window);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glm::vec3 cameraPos = camera->GetPosition();
-        cameraPos.x = sin(glfwGetTime()) * 10.0f;
-        cameraPos.z = cos(glfwGetTime()) * 10.0f;
-        cameraPos.y = 5.0f;
-        camera->SetPosition(cameraPos);
-        camera->UpdateViewMatrix();
+        glm::vec3 unitPos = unit->GetPosition();
+        unitPos.x += 1.0f * deltaTime;
+        unit->SetPosition(unitPos);
 
         spriteShader->Use();
-        spriteShader->SetMat4("model", model);
+        spriteShader->SetMat4("model", unit->GetModelMatrix());
         spriteShader->SetMat4("view", camera->GetViewMatrix());
         spriteShader->SetMat4("projection", projection);
         spriteRenderer->Render();
