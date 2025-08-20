@@ -3,6 +3,7 @@
 #include "config.h"
 #include "core/component/camera.h"
 #include "core/component/sprite_renderer.h"
+#include "core/scene.h"
 #include "core/shader.h"
 #include "core/unit.h"
 
@@ -45,6 +46,8 @@ int main()
 
     uray::Shader* spriteShader = new uray::Shader("../src/shader/sprite.vert.glsl", "../src/shader/sprite.frag.glsl");
 
+    uray::Scene* mainScene = new uray::Scene("MainScene");
+
     uray::Unit* spriteUnit = new uray::Unit();
     uray::Unit* cameraUnit = new uray::Unit();
 
@@ -53,6 +56,9 @@ int main()
 
     cameraUnit->AddComponent(camera);
     spriteUnit->AddComponent(spriteRenderer);
+
+    mainScene->AddUnit(cameraUnit);
+    mainScene->AddUnit(spriteUnit);
 
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
@@ -79,8 +85,7 @@ int main()
         spriteShader->SetMat4("view", camera->GetViewMatrix());
         spriteShader->SetMat4("projection", projection);
 
-        cameraUnit->Update();
-        spriteUnit->Update();
+        mainScene->Update();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
