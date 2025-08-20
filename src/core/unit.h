@@ -1,15 +1,22 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <glm/glm.hpp>
 
 namespace uray {
+class Component;
+
 class Unit
 {
 public:
     Unit(const std::string& name = "Unit");
     ~Unit();
+
+    void Update();
+
+    void AddComponent(Component* component);
 
     const std::string& GetName() const { return _name; }
     void SetName(const std::string& name) { _name = name; }
@@ -37,6 +44,8 @@ public:
     const glm::mat4& GetModelMatrix() const { return _modelMatrix; }
 
 private:
+    std::vector<Component*> _components;
+
     std::string _name;
 
     glm::vec3 _position = glm::vec3(0.0f);

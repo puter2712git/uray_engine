@@ -1,9 +1,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "config.h"
-#include "core/camera.h"
+#include "core/component/camera.h"
+#include "core/component/sprite_renderer.h"
 #include "core/shader.h"
-#include "core/sprite_renderer.h"
 #include "core/unit.h"
 
 #include <fstream>
@@ -44,10 +44,15 @@ int main()
     glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 
     uray::Shader* spriteShader = new uray::Shader("../src/shader/sprite.vert.glsl", "../src/shader/sprite.frag.glsl");
-    uray::SpriteRenderer* spriteRenderer = new uray::SpriteRenderer("../resource/container.jpg");
-    uray::Unit* unit = new uray::Unit();
 
+    uray::Unit* spriteUnit = new uray::Unit();
+    uray::Unit* cameraUnit = new uray::Unit();
+
+    uray::SpriteRenderer* spriteRenderer = new uray::SpriteRenderer("../resource/container.jpg");
     uray::Camera* camera = new uray::Camera();
+
+    cameraUnit->AddComponent(camera);
+    spriteUnit->AddComponent(spriteRenderer);
 
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
@@ -65,15 +70,17 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glm::vec3 unitPos = unit->GetPosition();
+        glm::vec3 unitPos = spriteUnit->GetPosition();
         unitPos.x += 1.0f * deltaTime;
-        unit->SetPosition(unitPos);
+        spriteUnit->SetPosition(unitPos);
 
         spriteShader->Use();
-        spriteShader->SetMat4("model", unit->GetModelMatrix());
+        spriteShader->SetMat4("model", spriteUnit->GetModelMatrix());
         spriteShader->SetMat4("view", camera->GetViewMatrix());
         spriteShader->SetMat4("projection", projection);
-        spriteRenderer->Render();
+
+        cameraUnit->Update();
+        spriteUnit->Update();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

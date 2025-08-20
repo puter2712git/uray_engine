@@ -71,6 +71,15 @@ SpriteRenderer::~SpriteRenderer()
     glDeleteTextures(1, &_texture);
 }
 
+void SpriteRenderer::Update()
+{
+    Render();
+}
+
+void SpriteRenderer::OnEnable() {}
+
+void SpriteRenderer::OnDisable() {}
+
 void SpriteRenderer::Render()
 {
     glBindVertexArray(_vao);

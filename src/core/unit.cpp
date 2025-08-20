@@ -2,13 +2,34 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "component/component.h"
+
 namespace uray {
 Unit::Unit(const std::string& name)
     : _name(name)
 {
 }
 
-Unit::~Unit() {}
+Unit::~Unit()
+{
+    for (auto& component : _components)
+        delete component;
+    _components.clear();
+}
+
+void Unit::Update()
+{
+    for (auto& component : _components) {
+        if (component->IsActive())
+            component->Update();
+    }
+}
+
+void Unit::AddComponent(Component* component)
+{
+    if (component)
+        _components.push_back(component);
+}
 
 void Unit::UpdateModelMatrix()
 {
