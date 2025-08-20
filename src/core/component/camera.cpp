@@ -13,6 +13,15 @@ Camera::Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up)
 
 Camera::~Camera() {}
 
+void Camera::Update()
+{
+    UpdateViewMatrix();
+}
+
+void Camera::OnEnable() {}
+
+void Camera::OnDisable() {}
+
 void Camera::UpdateViewMatrix()
 {
     if (!_isDirty)
